@@ -1,33 +1,25 @@
 <template>
   <div class="row">
-    <div class="col-3 text-weight-bold">VM List</div>
-    <div class="q-ml-sm">
-      <q-btn v-if="projectStore.getSelectedProject" dense size="sm" color="primary" icon="add" label="Add" @click="handleAddVMClick" />
-    </div>
-  </div>
-  <div v-if="projectStore.getSelectedProject">
-    <div class="row">
-        <div class="col text-weight-bold">Name</div>
-        <div v-if="props.wide" class="col text-weight-bold">Description</div>
-        <div v-if="props.wide" class="col text-weight-bold">Cores</div>
-        <div v-if="props.wide" class="col text-weight-bold">Memory</div>
-        <div v-if="props.wide" class="col text-weight-bold">Disk</div>
-        <div class="col"></div>
-      </div>
-    <div v-for="vm in vmStore.getProjectVMs(projectStore.getSelectedProject._id)" :key="vm._id">
 
-      <div class="row">
-        <div class="col">{{ vm.name }}</div>
-        <div v-if="props.wide" class="col">{{ vm.description }}</div>
-        <div  v-if="props.wide" class="col">{{ vm.cores }}</div>
-        <div v-if="props.wide" class="col">{{ vm.memory }}</div>
-        <div v-if="props.wide" class="col">{{ vm.disk }}</div>
-        <div class="col">
-          <q-btn dense size="xs" color="negative" icon="delete" @click="handleDeleteClick(vm._id)" />
-        </div>
-      </div>
-    </div>
   </div>
+  <q-table
+    title="Virtual Machines"
+    :rows="vmStore.getProjectVMs(projectStore.getSelectedProject._id)"
+    :columns="columns"
+    row-key="_id"
+    v-model:selected="selected"
+    :selection="`${props.wide ? 'multiple' : null}`"
+  >
+  <template v-slot:top >
+    <div class="text-h6">Virtual Machines</div>
+    <div>
+      <q-btn class="q-ml-lg" size="sm" color="primary" icon="delete" label="Delete Selected" @click="handleDeleteSelected" v-if="props.wide && vmStore.getProjectVMs(projectStore.getSelectedProject._id).length>0" />
+      <q-btn class="q-ml-lg" size="sm" color="primary" icon="add" label="Create VM" @click="handleAddVMClick" v-if="props.wide" />
+    </div>
+  </template>
+  </q-table>
+
+
 </template>
 
 <script setup>
@@ -43,6 +35,65 @@ const props = defineProps(['wide'])
 
 const vmStore = useVmStore()
 const projectStore = useProjectStore()
+const selected = ref([])
+const columns = ref([])
+if (props.wide) {
+
+  columns.value = [
+    {
+      name: 'name',
+      required: true,
+      label: 'Name',
+      align: 'left',
+      field: 'name',
+      sortable: true
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      align: 'left',
+      field: 'description',
+      sortable: true
+    },
+    {
+      name: 'cores',
+      label: 'Cores',
+      align: 'left',
+      field: 'cores',
+      sortable: true
+    },
+    {
+      name: 'memory',
+      label: 'Memory',
+      align: 'left',
+      field: 'memory',
+      sortable: true
+    },
+    {
+      name: 'disk',
+      label: 'Disk',
+      align: 'left',
+      field: 'disk',
+      sortable: true
+    },
+    {
+      name: 'actions',
+      label: 'Actions',
+      align: 'left',
+      field: 'actions'
+    }
+  ]
+} else {
+  columns.value = [{
+      name: 'name',
+      required: true,
+      label: 'Name',
+      align: 'left',
+      field: 'name',
+      sortable: true
+    }]
+}
+
 
 const { getProjectVMs } = storeToRefs(vmStore)
 const { getSelectedProject } = storeToRefs(projectStore)
@@ -53,9 +104,10 @@ function handleAddVMClick() {
   router.push('/vm/create')
 }
 
-function handleDeleteClick(id) {
-  console.log('Delete clicked', id)
-  vmStore.deleteVm(id)
+function handleDeleteSelected() {
+  selected.value.map((vm) => {
+    vmStore.deleteVm(vm._id)
+  })
 }
 
 watch(getSelectedProject, async () => {

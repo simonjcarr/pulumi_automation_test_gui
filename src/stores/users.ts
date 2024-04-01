@@ -4,7 +4,8 @@ const router = useRouter();
 
 export const useUserStore = defineStore("userStore",{
   state: () => ({
-    user: {}
+    user: {},
+    API_BASE: "http://192.168.0.197:3000"
   }),
 
   getters: {
@@ -16,7 +17,7 @@ export const useUserStore = defineStore("userStore",{
   actions: {
     async login (username, password) {
 
-      const response = await fetch('http://localhost:3000/api/userLogin', {
+      const response = await fetch(`${this.API_BASE}/api/userLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

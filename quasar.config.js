@@ -16,8 +16,8 @@ export default configure((/* ctx */) => {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      
-      
+
+
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -55,7 +55,9 @@ export default configure((/* ctx */) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        API_URL: process.env.VUE_APP_API_URL
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

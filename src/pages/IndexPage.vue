@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pa-md">
+
     <div class="row">
       <div class="col-2 text-h6">Projects</div>
       <div class="col-10 text-h6" v-if="projectStore.selectedProject">Selected Project: {{ projectStore.selectedProject.name }}</div>

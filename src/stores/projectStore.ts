@@ -4,7 +4,8 @@ import { useVmStore } from './vmStore';
 export const useProjectStore = defineStore('projectStore', {
   state: () => ({
     projects: [],
-    selectedProject: null
+    selectedProject: null,
+    API_BASE: "http://192.168.0.197:3000"
   }),
 
   getters: {
@@ -39,6 +40,15 @@ export const useProjectStore = defineStore('projectStore', {
   },
 
   actions: {
+    // async createProject (project) {
+    //   const result = await fetch(`${this.API_BASE}/api/createProject`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(project)
+    //   });
+    // },
     selectProject (projectId) {
       this.selectedProject = this.projects.find(project => project._id === projectId);
       this.getProjectResources(projectId);
@@ -46,23 +56,22 @@ export const useProjectStore = defineStore('projectStore', {
     clearSelectedProject () {
       this.selectedProject = null;
     },
-    async createProject (name, description, cores, memory, disk) {
+    async createProject (project) {
       // use fetch to post a project to the api at http://localhost:3000/api/createProject.
-       const result = await fetch('http://localhost:3000/api/createProject', {
+       const result = await fetch(`${this.API_BASE}/api/createProject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: name,
-          description: description,
-          cores: cores,
-          memory: memory,
-          disk: disk
+          name: project.name,
+          description: project.description,
+          cores: project.cores,
+          memory: project.memory,
+          disk: project.disk
         })
-
       });
-
+      console.log(result)
       //The result will contain the full list of projects. Use this to update the store
       const data = await result.json();
       this.fetchProjects();
@@ -71,7 +80,7 @@ export const useProjectStore = defineStore('projectStore', {
 
     fetchProjects () {
       // use fetch to get the list of projects from the api at http://localhost:3000/api/getProjects.
-      fetch('http://localhost:3000/api/getProjects')
+      fetch(`${this.API_BASE}/api/getProjects`)
         .then(response => response.json())
         .then(data => {
           this.projects = data.data;
@@ -80,7 +89,7 @@ export const useProjectStore = defineStore('projectStore', {
 
     getProjectResources(projectId) {
       // Use fetch to get total used resources for a project from the api at http://localhost:3000/api/project/getUsedResources. The result will include results for all projects grouped by project id. Use this to update the project state with a property called usedResources: { cores: number, memory: number, disk: number }
-      fetch(`http://localhost:3000/api/project/getUsedResources`)
+      fetch(`${this.API_BASE}/api/project/getUsedResources`)
         .then(response => response.json())
         .then(data => {
           console.log(data);

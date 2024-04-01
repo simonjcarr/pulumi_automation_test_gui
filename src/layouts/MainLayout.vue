@@ -34,6 +34,7 @@
       bordered
       class="q-pa-sm"
     >
+    <q-btn dense size="sm" color="primary" icon="add" label="New Project" @click="handleCreateProject" />
       <q-list>
         <q-item-label
           header
@@ -62,12 +63,18 @@ import EssentialLink from 'components/EssentialLink.vue'
 import { useUserStore } from 'stores/users'
 import selectProject from 'components/projects/SelectProject.vue'
 import ListVms from 'components/vms/ListVms.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const userStore = useUserStore()
 
 defineOptions({
   name: 'MainLayout'
 })
+
+const handleCreateProject = () => {
+  router.push('/projects/create')
+}
 
 const projectList = [
   // {

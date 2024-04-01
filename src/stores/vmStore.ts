@@ -4,7 +4,8 @@ import { useProjectStore } from './projectStore';
 
 export const useVmStore = defineStore('vmStore', {
   state: () => ({
-    vmList: []
+    vmList: [],
+    API_BASE: "http://192.168.0.197:3000"
   }),
 
   getters: {
@@ -28,7 +29,7 @@ export const useVmStore = defineStore('vmStore', {
   actions: {
     async createVm (vm) {
       console.log(vm)
-      const newVm = await fetch('http://localhost:3000/api/createVM', {
+      const newVm = await fetch(`${this.API_BASE}/api/createVM`, {
         method: 'POST',
         body: JSON.stringify(vm),
         headers: { 'Content-Type': 'application/json' }
@@ -38,12 +39,12 @@ export const useVmStore = defineStore('vmStore', {
       projectStore.getProjectResources(projectStore.getSelectedProject._id);
     },
     async fetchVmList () {
-      const response = await fetch('http://localhost:3000/api/vmList');
+      const response = await fetch(`${this.API_BASE}/api/vmList`);
       const data = await response.json();
       this.vmList = data.data;
     },
     async deleteVm (vmId) {
-      const response = await fetch(`http://localhost:3000/api/deleteVM/${vmId}`, {
+      const response = await fetch(`${this.API_BASE}/api/deleteVM/${vmId}`, {
         method: 'DELETE'
       });
       this.fetchVmList();
